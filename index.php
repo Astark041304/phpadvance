@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="main.css">
 
     <script>
         function toggleOthersField() {
@@ -120,16 +120,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="personal_firstname">First Name</label> 
     <input id="personal_firstname" type="text" name="personal_firstname" placeholder="First Name" required> 
 
-    <label for="personal_middle">Middle Initial</label> 
+
+    </div>
+
+    <div class="input-box">
+    
+    <label for="personal_middle">Middle Name</label> 
     <input id="personal_middle" type="text" name="personal_middle" placeholder="Middle Name" required>
+
+    <label for="date">Date of Birth</label> 
+    <input id="date" type="date" name="date" required> 
 
     </div>
 
     <div class="input-box">
       
-    <label for="date">Date of Birth</label> 
-      <input id="date" type="date" name="date" required> 
-
       <div class="radio">
       <label for="Sex">Sex</label>
       <label for="Male">Male</label>
@@ -159,15 +164,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <div class="input-box">
  
-    <label for="tax">Tax Identification Numbers</label> 
+    <label for="tax">Tax Identification No.</label> 
       <input id="tax_no" type="text" name="tax_no" placeholder="Tax Id. No"  > 
      
-      <label for="nationality">Nationality</label> 
-      <input id="nationality" type="text" name="nationality" placeholder="Nationality" required> 
      
       <label for="religion">Religion</label> 
       <input id="religion" type="text" name="religion" placeholder="Religion">
 
+    </div>
+
+    <div class="input-box">
+
+    <label for="nationality">Nationality</label> 
+    <input id="nationality" type="text" name="nationality" placeholder="Nationality" required> 
+
+    </div>
+
+    <div class="input-box">
+
+    
     </div>
  
     <h2>Place of birth</h2>
@@ -177,11 +192,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
       <input id="bldg" type="bldg" name="bldg" placeholder="RM/FLR/Unit" required>
 
-      <label for="blk">House/Lot & Blk. No</label> 
+    </div>
+
+    <div class="input-box">
+
+    <label for="blk">House/Lot & Blk. No</label> 
       <input id="blk" type="blk" name="blk" placeholder="House/Lot No." required>
 
-
     </div>
+
+
 
     <div class="input-box">
 
@@ -191,19 +211,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      <label for="subdivision">Subdivision</label> 
       <input id="subdivision" type="subdivision" name="subdivision" placeholder="Subdivision">
       
-      <label for="barangay">Barangay/District</label> 
+    </div>
+
+    <div class="input-box">
+    <label for="barangay">Barangay/District</label> 
       <input id="barangay" type="barangay" name="barangay" placeholder="Barangay/District">
+    
+      <label for="city">City/Municipality</label> 
+      <input id="city" type="city" name="city" placeholder="City/Municipality"> 
+
     </div>
 
     <div class="input-box">
 
-     <label for="city">City/Municipality</label> 
-      <input id="city" type="city" name="city" placeholder="City/Municipality"> 
 
       <label for="province">Province</label> 
       <input id="province" type="province" name="province" placeholder="Province">
+    </div>
 
-      <label>Country</label>
+    <div class="input-box">
+
+    <label>Country</label>
       <select name="country" id="country" required>
                     <option value="" disabled selected>Select</option>
                     <?php
@@ -244,14 +272,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     ?>
                 </select>
-    </div>
 
-    <div class="input-box">
-
-    <label for="zip">Zip Code</label> 
+                <label for="zip">Zip Code</label> 
     <input id="zip" type="zip" name="zip" placeholder="Zip Code">
-
     </div>
+
+
 
     <h2>Home Address</h2>
 
@@ -260,9 +286,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
       <input id="bldg" type="bldg" name="bldg" placeholder="RM/FLR/Unit" required>
 
-      <label for="blk">House/Lot & Blk. No</label> 
+
+    </div>
+
+    <div class="input-box">
+    <label for="blk">House/Lot & Blk. No</label> 
       <input id="blk" type="blk" name="blk" placeholder="House/Lot No" required>
 
+    
     </div>
 
     <div class="input-box">
@@ -273,21 +304,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="subdivision">Subdivision</label> 
     <input id="subdivision" type="subdivision" name="subdivision" placeholder="Subdivision" required>
       
-      <label for="barangay">Barangay/District</label> 
-      <input id="barangay" type="barangay" name="barangay" placeholder="Barangay/District" required >
 
     </div>
 
     <div class="input-box">
+    <label for="barangay">Barangay/District</label> 
+      <input id="barangay" type="barangay" name="barangay" placeholder="Barangay/District">
     
-    <label for="city">City/Municipality</label> 
-      <input id="city" type="city" name="city" placeholder="City/Municipality" required> 
+      <label for="city">City/Municipality</label> 
+      <input id="city" type="city" name="city" placeholder="City/Municipality"> 
 
-      <label for="province">Province</label> 
-      <input id="province" type="province" name="province" placeholder="Province" required>
+    </div>
 
-      
-     
+    <div class="input-box">
+
+
+<label for="province">Province</label> 
+<input id="province" type="province" name="province" placeholder="Province">
+</div>
+
+
+    <div class="input-box">
+    
       <label>Country</label>
       <select name="country" id="country" required>
                     <option value="" disabled selected>Select</option>
@@ -329,22 +367,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     ?>
                 </select> 
+
+                <label for="zip">Zip Code</label> 
+      <input id="zip" type="zip" name="zip" placeholder="Zip Code" required> 
     </div>
 
     <div class="input-box">
   
-     <label for="zip">Zip Code</label> 
-      <input id="zip" type="zip" name="zip" placeholder="Zip Code" required> 
 
-      <label for="number">Mobile/Cellphone Number</label>
+      <label for="number">Mobile/Cellphone No.</label>
       <input id="number" type="mobile number" name="number" placeholder="Mobile/Cell No." required>
 
     </div>
 
     <div class="input-box">
-
     <label for="email">E-mail Address</label>
-      <input id="email" type="email" name="email" placeholder="E-mail Adress">
+    <input id="email" type="email" name="email" placeholder="E-mail Adress">
+    </div>
+
+    <div class="input-box">
 
       <label for="tel">Telephone Number</label>
       <input id="tel" type="tel" name="tel" placeholder="Telephone No.">
@@ -361,11 +402,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <label for="father_firstname">First Name</label> 
 <input id="father_firstname" type="text" name="father_firstname" placeholder="First Name"> 
 
+</div>
+
+
+<div class="input-box">
 <label for="father_middle">Middle Initial</label> 
 <input id="father_middle" type="text" name="father_middle" placeholder="Middle Name">
       
+</div>
 
-    </div>
+      
 
     <h2>Mother's Name</h2>
 
@@ -377,9 +423,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <label for="mother_firstname">First Name</label> 
 <input id="mother_firstname" type="text" name="mother_firstname" placeholder="First Name"> 
 
-<label for="mother_middle">Middle Initial</label> 
-<input id="mother_middle" type="text" name="mother_middle" placeholder="Middle Name">
+    </div>
 
+    <div class="input-box">
+    <label for="mother_middle">Middle Initial</label> 
+<input id="mother_middle" type="text" name="mother_middle" placeholder="Middle Name">
 
     </div>
 
