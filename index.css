@@ -1,8 +1,12 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Roboto, sans-serif;
+    font-family: sans-serif;
+}
+
+::-webkit-scrollbar-thumb{
+    border-radius: 10px;
 }
 
 body{
@@ -11,7 +15,8 @@ body{
     align-items: center;
     justify-content: center;
     font-family: Roboto, sans-serif;
-    background-color: var(--bg-color)
+    background: var(--bg-color);
+    
 }
 
 :root {
@@ -20,7 +25,7 @@ body{
     --text-color: #dee1e6;
     --hover-color: #8F0B13;
     --button-color: #681304;
-    --border-color: #129c6e;
+    --border-color: rgba(130, 106, 251);
   }
 
   .wrapper{
@@ -55,125 +60,127 @@ body{
   }
 
   span {
-    color: #129c6e;
+    color: rgba(130, 106, 251);
   }
-  
 
-.container {
-position: relative;
-max-width: 1000px;
-width: 100%;
-border: var(--border-color);
-border-style: solid;
-border-width: 10px;
-background: var(--bg-color);
-padding: 25px;
-border-radius: 8px;
-box-shadow: 0 0 15px rgba(0,0,0,0.1);
+.container{
+    position: relative;
+    max-width: 1000px;
+    width: 100%;
+    border: var(--border-color);
+    border-style: solid;
+    border-width: 10px;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-top: 850px;
+    
 }
 
 .container h1{
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: black;
     font-weight: 500;
     margin-bottom: 10px;
+    text-align: center;
 }
+
 
 .container h2{
-    font-size: 1.5rem;
+    margin-top: 10px;
+    font-size: 2.0rem;
     color: black;
     font-weight: 500;
-    margin-top: 10px;
     margin-bottom: 10px;
-
+    
 }
-
 
 .container .form{
     margin-top: 30px;
+    font-family: Roboto, sans-serif;
 }
 
 .form .input-box{
-    width: 90%;
-    margin-bottom: 20px;
-
-    
+    width: 100%;
+    margin-top: 20px;
 }
 
 .input-box label{
     color: #333;
-    margin-left: 10px;
-    padding-top: 10px;
-    font-size: 13px;
-    text-align: center;
 }
 
 .form .input-box input{
     position: relative;
-    text-align: center;
-    height: 10px;
+    height: 50px;
     width: 100%;
     outline: none;
-    font-size: 13px;
+    font-size: 1rem;
     color: #707070;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-top: 8px;
+    border: 1px solid rgba(130, 106, 251);
+    border-radius: 6px;
     padding: 0 15px;
-    margin-left: 15px;
-    margin-bottom: 10px;
-      
 }
 
-.container label{
-    margin-top: 20px;
+.form .column{
+    display: flex;
+    column-gap: 5px;
 }
 
-.container .input-box select{
-    height: 20px;
-    width: 100px;
+
+.radio{
+    margin-top: 10px;
 }
 
-.button button{
-    justify-content: center;
-    width: 120px;
-    height: 30px;
-    color: var(--border-color);
-    
+.radio input{
+    margin-left: -25px;
+    width: 70px;
+    height: 15px;
 }
 
-.button{
-    margin-left: 450px;
-    margin-top: 25px;
-    color: var(--border-color);
+.radio label{
+    margin-left: 5px;
+    color: #333;
 }
-
-.input-box input{
-    margin-bottom: 10px;
-    width: 110px;
-    font-size: 13px;
-    border: 1px solid;
-    border-radius: 2px;
-}
-
 
 .Select{
-    margin-left: 430px;
-    margin-top: -35px;
-    margin-bottom: 10px;
+    margin-left: 300px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.Select label{
+    color: #333;
 }
 .Select select{
     height: 20px;
-    width: 100px;
+    width: 200px;
 }
 
 select{
     height: 20px;
-    width: 100px;
+    width: 200px;
 }
 
 .Select input{
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 5px;
     width: 180px;
+    color: #707070
   }
+
+.button button{
+    justify-content: center;
+    width: 250px;
+    height: 35px;
+    color: var(--border-color);
+    font-size: 1.5rem;
+    
+}
+
+.button{
+    margin-left: 330px;
+    margin-top: 25px;
+    color: var(--border-color);
+}
 

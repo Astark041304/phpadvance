@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="index.css">
 
     <script>
         function toggleOthersField() {
@@ -77,16 +77,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $today = new DateTime(); 
         $age = $today->diff($dob)->y; 
         if ($age < 18) {
-            $errors[] = "You must be at least 18 years old to submit this form.";
+            $errors[] = "You must be 18 years old to submit this form.";
         }
     } else {
         $errors[] = "Date of Birth is required.";
     }
 
-    
     if (!empty($_POST['number']) && !preg_match('/^\d+$/', $_POST['number'])) {
         $errors[] = "Mobile number must contain only numbers.";
     }
+
+    if (!empty($_POST['tel']) && !preg_match('/^\d+$/', $_POST['tel'])) {
+        $errors[] = "Telephone number must contain only numbers.";
+    }
+
 
     
     if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
@@ -95,6 +99,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!empty($_POST['tax_no']) && !preg_match('/^\d+$/', $_POST['tax_no'])) {
         $errors[] = "Tax No must contain only numbers.";
+    }
+
+    if (!empty($_POST['bzip']) && !preg_match('/^\d+$/', $_POST['zip'])) {
+        $errors[] = "Zip Code must contain only numbers.";
+    }
+
+    if (!empty($_POST['zip']) && !preg_match('/^\d+$/', $_POST['zip'])) {
+        $errors[] = "Zip Code must contain only numbers.";
     }
 
    
@@ -109,7 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <section class="container">
 
-    <form action="" method="POST">
+    <form action="details.php" method="POST" class="form">
+    
     <h1>Personal Data</h1>
 
     <div class="input-box">
@@ -117,33 +130,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      <label for="personal_lastname">Last Name</label> 
      <input id="personal_lastname" type="text" name="personal_lastname" placeholder="Last Name" required>
 
+    </div>
+
+    <div class="input-box">
+
     <label for="personal_firstname">First Name</label> 
     <input id="personal_firstname" type="text" name="personal_firstname" placeholder="First Name" required> 
 
-
     </div>
+
+    <div class="column">
 
     <div class="input-box">
     
     <label for="personal_middle">Middle Name</label> 
     <input id="personal_middle" type="text" name="personal_middle" placeholder="Middle Name" required>
 
+    </div>
+
+    <div class="input-box">
+
     <label for="date">Date of Birth</label> 
     <input id="date" type="date" name="date" required> 
 
     </div>
 
-    <div class="input-box">
-      
+   
+       
+      </div>
+
       <div class="radio">
-      <label for="Sex">Sex</label>
+      <label for="Male">Sex:</label>  
       <label for="Male">Male</label>
       <input type="radio" id="Male" name="sex" value="Male" required>
       <label for="Female">Female</label>
-      <input type="radio" id="Female" name="sex" value="Female" required>  
+      <input type="radio" id="Female" name="sex" value="Female" required>
       </div>
-        
-      
+
       <div class="Select">
     <label for="civil_status">Civil Status:</label>
     <select id="civil_status" name="civil_status" onchange="toggleOthersField()">
@@ -160,265 +183,332 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       </div>
 
-    </div>
-    
-    <div class="input-box">
- 
-    <label for="tax">Tax Identification No.</label> 
-      <input id="tax_no" type="text" name="tax_no" placeholder="Tax Id. No"  > 
-     
-     
+      <div class="column">
+
+      <div class="input-box">
+
+      <label for="tax">Tax Identification No.</label> 
+      <input id="tax_no" type="text" name="tax_no" placeholder="Tax Id. No"  >
+      
+      </div>
+
+      <div class="input-box">
+
       <label for="religion">Religion</label> 
       <input id="religion" type="text" name="religion" placeholder="Religion">
 
-    </div>
+      </div>
 
-    <div class="input-box">
+      <div class="input-box">
 
-    <label for="nationality">Nationality</label> 
-    <input id="nationality" type="text" name="nationality" placeholder="Nationality" required> 
+      <label for="nationality">Nationality</label> 
+      <input id="nationality" type="text" name="nationality" placeholder="Nationality" required> 
 
-    </div>
+     </div>
 
-    <div class="input-box">
+      </div>
 
-    
-    </div>
- 
-    <h2>Place of birth</h2>
-
-    <div class="input-box">
-
-      <label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
-      <input id="bldg" type="bldg" name="bldg" placeholder="RM/FLR/Unit" required>
-
-    </div>
-
-    <div class="input-box">
-
-    <label for="blk">House/Lot & Blk. No</label> 
-      <input id="blk" type="blk" name="blk" placeholder="House/Lot No." required>
-
-    </div>
+      <h2>Place of birth</h2>
 
 
+<div class="column">
+<div class="input-box">
 
-    <div class="input-box">
+<label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
+<input id="bldg" type="bldg" name="bldg" placeholder="RM/FLR/Unit" required>
+
+</div>
+
+<div class="input-box">
+
+<label for="blk">House/Lot & Blk. No</label> 
+<input id="blk" type="blk" name="blk" placeholder="House/Lot No." required>
+
+</div>
+
+<div class="input-box">
 
     <label for="sn">Street Name</label> 
     <input id="sn" type="sn" name="sn"  placeholder="Street Name" required>
+      
+    </div>
 
-     <label for="subdivision">Subdivision</label> 
+
+</div>
+
+
+<div class="column">
+
+   <div class="input-box">
+
+      <label for="subdivision">Subdivision</label> 
       <input id="subdivision" type="subdivision" name="subdivision" placeholder="Subdivision">
-      
-    </div>
 
-    <div class="input-box">
-    <label for="barangay">Barangay/District</label> 
+      </div>
+
+      <div class="input-box">
+
+      <label for="barangay">Barangay/District</label> 
       <input id="barangay" type="barangay" name="barangay" placeholder="Barangay/District">
-    
+
+      </div>
+      
+
+      <div class="input-box">
+
       <label for="city">City/Municipality</label> 
       <input id="city" type="city" name="city" placeholder="City/Municipality"> 
 
     </div>
 
-    <div class="input-box">
 
+   </div>
 
-      <label for="province">Province</label> 
-      <input id="province" type="province" name="province" placeholder="Province">
-    </div>
+   <div class="input-box">
+<label>Country</label>
+<select name="country" id="country" required>
+              <option value="" disabled selected>Select</option>
+              <?php
+                  
+                  $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
+                  "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
+                  "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
+                  "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
+                  "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
+                  "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
+                  "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
+                   "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
+                   "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
+                   "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
+                   "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
+                   "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
+                   "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
+                   "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
+                   "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
+                   "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
+                   "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
+                   "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
+                   "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
+                   "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
+                   "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
+                   "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
+                   "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
+                   "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
+                   "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
+                   "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
+                   "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
+                   "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
+                   "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"
+                ];
 
-    <div class="input-box">
-
-    <label>Country</label>
-      <select name="country" id="country" required>
-                    <option value="" disabled selected>Select</option>
-                    <?php
-                        
-                        $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
-                        "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
-                        "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
-                        "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
-                        "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
-                        "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
-                        "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
-                         "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
-                         "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
-                         "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
-                         "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
-                         "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
-                         "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
-                         "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
-                         "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
-                         "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
-                         "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
-                         "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
-                         "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
-                         "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
-                         "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
-                         "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
-                         "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
-                         "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
-                         "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
-                         "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
-                         "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
-                         "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
-                         "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"
-                      ];
-
-                        foreach ($countries as $country) {
-                            echo "<option value=\"$country\">$country</option>";
-                        }
-                    ?>
-                </select>
-
-                <label for="zip">Zip Code</label> 
-    <input id="zip" type="zip" name="zip" placeholder="Zip Code">
-    </div>
-
-
-
-    <h2>Home Address</h2>
-
-    <div class="input-box">
-
-    <label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
-      <input id="bldg" type="bldg" name="bldg" placeholder="RM/FLR/Unit" required>
-
-
-    </div>
-
-    <div class="input-box">
-    <label for="blk">House/Lot & Blk. No</label> 
-      <input id="blk" type="blk" name="blk" placeholder="House/Lot No" required>
-
-    
-    </div>
-
-    <div class="input-box">
-
-    <label for="sn">Street Name</label> 
-    <input id="sn" type="sn" name="sn" placeholder="Street Name" required>
-
-    <label for="subdivision">Subdivision</label> 
-    <input id="subdivision" type="subdivision" name="subdivision" placeholder="Subdivision" required>
-      
-
-    </div>
-
-    <div class="input-box">
-    <label for="barangay">Barangay/District</label> 
-      <input id="barangay" type="barangay" name="barangay" placeholder="Barangay/District">
-    
-      <label for="city">City/Municipality</label> 
-      <input id="city" type="city" name="city" placeholder="City/Municipality"> 
-
-    </div>
-
-    <div class="input-box">
-
-
-<label for="province">Province</label> 
-<input id="province" type="province" name="province" placeholder="Province">
-</div>
-
-
-    <div class="input-box">
-    
-      <label>Country</label>
-      <select name="country" id="country" required>
-                    <option value="" disabled selected>Select</option>
-                    <?php
-                        
-                        $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
-                        "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
-                        "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
-                        "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
-                        "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
-                        "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
-                        "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
-                         "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
-                         "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
-                         "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
-                         "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
-                         "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
-                         "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
-                         "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
-                         "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
-                         "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
-                         "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
-                         "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
-                         "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
-                         "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
-                         "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
-                         "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
-                         "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
-                         "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
-                         "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
-                         "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
-                         "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
-                         "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
-                         "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"
-                      ];
-
-                        foreach ($countries as $country) {
-                            echo "<option value=\"$country\">$country</option>";
-                        }
-                    ?>
-                </select> 
-
-                <label for="zip">Zip Code</label> 
-      <input id="zip" type="zip" name="zip" placeholder="Zip Code" required> 
-    </div>
-
-    <div class="input-box">
-  
-
-      <label for="number">Mobile/Cellphone No.</label>
-      <input id="number" type="mobile number" name="number" placeholder="Mobile/Cell No." required>
-
-    </div>
-
-    <div class="input-box">
-    <label for="email">E-mail Address</label>
-    <input id="email" type="email" name="email" placeholder="E-mail Adress">
-    </div>
-
-    <div class="input-box">
-
-      <label for="tel">Telephone Number</label>
-      <input id="tel" type="tel" name="tel" placeholder="Telephone No.">
-
-    </div>
-
-    <h2>Father's Name</h2>
-
-    <div class="input-box">
-  
-<label for="father_lastname">Last Name</label> 
-<input id="father_lastname" type="text" name="father_lastname" placeholder="Last Name"> 
-
-<label for="father_firstname">First Name</label> 
-<input id="father_firstname" type="text" name="father_firstname" placeholder="First Name"> 
+                  foreach ($countries as $country) {
+                      echo "<option value=\"$country\">$country</option>";
+                  }
+              ?>
+          </select>
 
 </div>
 
+   <div class="column">
 
 <div class="input-box">
+
+<label for="province">Province</label> 
+<input id="province" type="country" name="province" placeholder="Province">
+
+</div>
+
+<div class="input-box">
+<label for="zip">Zip Code</label> 
+<input id="bzip" type="bzip" name="bzip" placeholder="Zip Code">
+</div>
+
+
+
+   </div>
+
+   <h2>Home Address</h2>
+
+
+<div class="column">
+<div class="input-box">
+
+<label for="bldg">RM/FLR/Unit No. & Bldg. Name</label> 
+<input id="hbldg" type="hbldg" name="hbldg" placeholder="RM/FLR/Unit" required>
+
+</div>
+
+<div class="input-box">
+
+<label for="blk">House/Lot & Blk. No</label> 
+<input id="hblk" type="hblk" name="hblk" placeholder="House/Lot No." required>
+
+</div>
+
+<div class="input-box">
+
+    <label for="sn">Street Name</label> 
+    <input id="hsn" type="sn" name="hsn"  placeholder="Street Name" required>
+      
+    </div>
+
+
+</div>
+
+
+<div class="column">
+
+   <div class="input-box">
+
+      <label for="subdivision">Subdivision</label> 
+      <input id="hsubdivision" type="hsubdivision" name="hsubdivision" placeholder="Subdivision">
+
+      </div>
+
+      <div class="input-box">
+
+      <label for="barangay">Barangay/District</label> 
+      <input id="hbarangay" type="hbarangay" name="hbarangay" placeholder="Barangay/District">
+
+      </div>
+      
+
+      <div class="input-box">
+
+      <label for="city">City/Municipality</label> 
+      <input id="hcity" type="hcity" name="hcity" placeholder="City/Municipality"> 
+
+    </div>
+
+
+   </div>
+
+   <div class="input-box">
+<label>Country</label>
+<select name="hcountry" id="country" required>
+              <option value="" disabled selected>Select</option>
+              <?php
+                  
+                  $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
+                  "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
+                  "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
+                  "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
+                  "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
+                  "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
+                  "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
+                   "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
+                   "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
+                   "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
+                   "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
+                   "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
+                   "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
+                   "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
+                   "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
+                   "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
+                   "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
+                   "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
+                   "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
+                   "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
+                   "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
+                   "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
+                   "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
+                   "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
+                   "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
+                   "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
+                   "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
+                   "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
+                   "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"
+                ];
+
+                  foreach ($countries as $country) {
+                      echo "<option value=\"$country\">$country</option>";
+                  }
+              ?>
+          </select>
+
+</div>
+
+   <div class="column">
+
+<div class="input-box">
+
+<label for="province">Province</label> 
+<input id="hprovince" type="hprovince" name="hprovince" placeholder="Province">
+
+</div>
+
+<div class="input-box">
+<label for="zip">Zip Code</label> 
+<input id="zip" type="zip" name="zip" placeholder="Zip Code">
+</div>
+
+
+
+   </div>
+
+   <div class="column">
+
+   <div class="input-box">
+  
+  <label for="number">Mobile/Cellphone No.</label>
+  <input id="number" type="mobile number" name="number" placeholder="Mobile/Cell No." required>
+
+</div>
+
+<div class="input-box">
+<label for="email">E-mail Address</label>
+<input id="email" type="email" name="email" placeholder="E-mail Adress">
+</div>
+
+<div class="input-box">
+
+  <label for="tel">Telephone Number</label>
+  <input id="tel" type="tel" name="tel" placeholder="Telephone No.">
+
+</div>
+
+   </div>
+
+   <h2>Father's Name</h2>
+
+   <div class="column">
+
+   <div class="input-box">
+  
+  <label for="father_lastname">Last Name</label> 
+  <input id="father_lastname" type="text" name="father_lastname" placeholder="Last Name"> 
+  
+  </div>
+  
+  <div class="input-box">
+  
+  <label for="father_firstname">First Name</label> 
+  <input id="father_firstname" type="text" name="father_firstname" placeholder="First Name"> 
+  
+  </div>
+
+
+  <div class="input-box">
 <label for="father_middle">Middle Initial</label> 
 <input id="father_middle" type="text" name="father_middle" placeholder="Middle Name">
       
 </div>
 
-      
 
-    <h2>Mother's Name</h2>
+   </div>
 
-    <div class="input-box">
+   <h2>Mother's Name</h2>
+
+   <div class="column">
+
+   <div class="input-box">
 
 <label for="mother_lastname">Last Name</label> 
 <input id="mother_lastname" type="text" name="mother_lastname" placeholder="Last Name"> 
+
+ </div>
+
+ <div class="input-box">
 
 <label for="mother_firstname">First Name</label> 
 <input id="mother_firstname" type="text" name="mother_firstname" placeholder="First Name"> 
@@ -430,6 +520,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <input id="mother_middle" type="text" name="mother_middle" placeholder="Middle Name">
 
     </div>
+
+   </div>
 
     <div class="button">
       <button type="submit">Submit</button>
@@ -453,9 +545,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
    </section>
-
-
-
 
 
 
