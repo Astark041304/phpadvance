@@ -51,6 +51,7 @@ body{
     z-index: 100;
   }
   
+
   .header h2 {
     font-size: 200%;
     font-weight: 850;
@@ -65,16 +66,16 @@ body{
 .container{
     position: relative;
     max-width: 1000px;
-    width: 110%;
+    width: 100%;
     border: var(--border-color);
     border-style: solid;
     border-width: 10px;
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    margin-bottom: 180px;
-    margin-top: 10px;
-      
+    margin-top: 900px;
+    margin-bottom: 10px;
+    
 }
 
 .container h1{
@@ -85,14 +86,107 @@ body{
     text-align: center;
 }
 
-.container h2{
-  font-size: 2rem;
-  margin-bottom: 10px;
-  margin-top: 10px;
 
+.container h2{
+    margin-top: 10px;
+    font-size: 2.0rem;
+    color: black;
+    font-weight: 500;
+    margin-bottom: 10px;
+    
+}
+
+.container .form{
+    margin-top: 30px;
+    font-family: Roboto, sans-serif;
+}
+
+.form .input-box{
+    width: 100%;
+    margin-top: 20px;
+}
+
+.input-box label{
+    color: #333;
+}
+
+.form .input-box input{
+    position: relative;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #707070;
+    margin-top: 8px;
+    border: 1px solid rgba(130, 106, 251);
+    border-radius: 6px;
+    padding: 0 15px;
+}
+
+.form .column{
+    display: flex;
+    column-gap: 5px;
 }
 
 
-.container .form{
-    font-family: Roboto, sans-serif;
+.radio{
+    margin-top: 10px;
+}
+
+.radio input{
+    margin-left: -25px;
+    width: 70px;
+    height: 15px;
+}
+
+.radio label{
+    margin-left: 5px;
+    color: #333;
+}
+
+.Select{
+    margin-left: 300px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.Select label{
+    color: #333;
+}
+.Select select{
+    height: 20px;
+    width: 200px;
+}
+
+select{
+    height: 20px;
+    width: 200px;
+}
+
+.Select input{
+    margin-top: 20px;
+    margin-bottom: 5px;
+    width: 180px;
+    color: #707070
+  }
+
+.button button{
+    justify-content: center;
+    width: 250px;
+    height: 35px;
+    color: var(--border-color);
+    font-size: 1.5rem;
+    
+}
+
+.button{
+    margin-left: 330px;
+    margin-top: 25px;
+    color: var(--border-color);
+}
+
+.error-container .error {
+    color: red; 
+   
+    margin-top: 10px; 
 }

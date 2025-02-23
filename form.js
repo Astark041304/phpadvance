@@ -73,3 +73,21 @@ function populateCountries() {
 
 // Ensure the function runs when the page loads
 document.addEventListener("DOMContentLoaded", populateCountries);
+
+
+
+const moveButton = document.getElementById('moveButton');
+
+moveButton.addEventListener('click', () => {
+    // Randomly move the button within a certain range
+    const randomX = Math.floor(Math.random() * 200) - 100; // Random X offset
+    const randomY = Math.floor(Math.random() * 200) - 100; // Random Y offset
+
+    // Get the current position
+    const currentLeft = moveButton.parentElement.offsetLeft;
+    const currentTop = moveButton.parentElement.offsetTop;
+
+    // Set the new position
+    moveButton.parentElement.style.left = `${currentLeft + randomX}px`;
+    moveButton.parentElement.style.top = `${currentTop + randomY}px`;
+});
