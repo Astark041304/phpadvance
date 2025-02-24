@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taxId = trim($_POST['tax'] ?? '');
     $nationality = trim($_POST['nationality'] ?? '');
     $religion = trim($_POST['religion'] ?? '');
+
     $birthunit = trim($_POST['bldg'] ?? '');
     $birthblk = trim($_POST['blk'] ?? '');
     $birthstreetName = trim($_POST['sn'] ?? '');
@@ -32,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthprovince = trim($_POST['province'] ?? '');
     $birthcountry = $_POST['country'] ?? '';
     $birthzipCode = trim($_POST['bzip'] ?? '');
+
     $unit = trim($_POST['hbldg'] ?? '');
     $blk = trim($_POST['hblk'] ?? '');
     $streetName = trim($_POST['hsn'] ?? '');
@@ -44,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mobile = trim($_POST['number'] ?? '');
     $telephone = trim($_POST['tel'] ?? '');
     $email = trim($_POST['email'] ?? '');
+
     $fatherlastName = trim($_POST['father_lastname'] ?? '');
     $fatherfirstName = trim($_POST['father_firstname'] ?? '');
     $fathermiddleName = trim($_POST['father_middle'] ?? '');
@@ -199,7 +202,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'motherId' => $motherId,
             'fatherId' => $fatherId,
 
-            'fullName' => "$lastName, $firstName $middleName",
+            'personal_lastname' => $lastName, 
+            'personal_firstname'=> $firstName, 
+            'personal_middle'=> $middleName, 
             'dob' => $dateOfBirth,
             'age' => calculateAge($dateOfBirth),
             'sex' => $sex,
