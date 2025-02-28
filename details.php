@@ -1,65 +1,16 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['form_data'])) {
+if (!isset($_SESSION['users']) || !is_array($_SESSION['users']) || empty($_SESSION['users'])) {
     header("Location: index.php");
     exit();
 }
 
-$formData = $_SESSION['form_data'];
-unset($_SESSION['form_data']);
-
-// Extract Personal Information
-$lastName = isset($formData['personal_lastname']) ? $formData['personal_lastname'] : '';
-$firstName = isset($formData['personal_firstname']) ? $formData['personal_firstname'] : '';
-$middleName = isset($formData['personal_middle']) ? $formData['personal_middle'] : '';
-$dateOfBirth = isset($formData['dob']) ? $formData['dob'] : '';
-$age = isset($formData['age']) ? $formData['age'] : '';
-$sex = isset($formData['sex']) ? $formData['sex'] : '';
-$civilStatus = isset($formData['civilStatus']) ? $formData['civilStatus'] : '';
-$taxId = isset($formData['taxId']) ? $formData['taxId'] : '';
-$religion = isset($formData['religion']) ? $formData['religion'] : '';
-$nationality = isset($formData['nationality']) ? $formData['nationality'] : '';
-
-// Extract Birthplace
-$birth = $formData['birth'] ?? [];
-$birthunit = $birth['bldg'] ?? '';
-$birthblk = $birth['blk'] ?? '';
-$birthstreetName = $birth['sn'] ?? '';
-$birthsubdivision = $birth['subdivision'] ?? '';
-$birthbarangay = $birth['barangay'] ?? '';
-$birthcity = $birth['city'] ?? 'N/A';
-$birthprovince = $birth['province'] ?? 'N/A';
-$birthcountry = $birth['country'] ?? 'N/A';
-$birthzipCode = $birth['bzip'] ?? '';
-
-// Extract Home Address
-$address = $formData['address'] ?? [];
-$unit = $address['hbldg'] ?? '';
-$blk = $address['hblk'] ?? '';
-$streetName = $address['hsn'] ?? '';
-$subdivision = $address['hsubdivision'] ?? '';
-$barangay = $address['hbarangay'] ?? '';
-$city = $address['hcity'] ?? 'N/A';
-$province = $address['hprovince'] ?? 'N/A';
-$country = $address['hcountry'] ?? 'N/A';
-$zipCode = $address['hzip'] ?? '';
-
-// Extract Contact Information
-$contact = $formData['contact'] ?? [];
-$mobile = $contact['number'] ?? '';
-$telephone = $contact['tel'] ?? '';
-$email = $contact['email'] ?? '';
-
-// Extract Parents' Information
-$fatherlastName = isset($formData['father_lastname']) ? $formData['father_lastname'] : '';
-$fatherfirstName = isset($formData['father_firstname']) ? $formData['father_firstname'] : '';
-$fathermiddleName = isset($formData['father_middle']) ? $formData['father_middle'] : '';
-
-$motherlastName = isset($formData['mother_lastname']) ? $formData['mother_lastname'] : '';
-$motherfirstName = isset($formData['mother_firstname']) ? $formData['mother_firstname'] : '';
-$mothermiddleName = isset($formData['mother_middle']) ? $formData['mother_middle'] : '';
-
+if (is_array($_SESSION['users'])) {
+    $_SESSION['users'] = array_filter($_SESSION['users'], function($row) {
+        return is_array($row) && !empty(array_filter($row));
+    });
+}
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +19,7 @@ $mothermiddleName = isset($formData['mother_middle']) ? $formData['mother_middle
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Information</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="details.css">
 </head>
 
 <body>
@@ -89,56 +40,117 @@ $mothermiddleName = isset($formData['mother_middle']) ? $formData['mother_middle
 
         <h2>Personal Information</h2>
         <table class="info-table">
-            <tr><th>Field</th><th>Information</th></tr>
-            <tr><td>Name</td><td><?php echo "$lastName, $firstName $middleName"; ?></td></tr>
-            <tr><td>Date of Birth</td><td><?php echo $dateOfBirth; ?></td></tr>
-            <tr><td>Sex</td><td><?php echo $sex; ?></td></tr>
-            <tr><td>Civil Status</td><td><?php echo $civilStatus; ?></td></tr>
-            <tr><td>Tax ID</td><td><?php echo $taxId; ?></td></tr>
-            <tr><td>Religion</td><td><?php echo $religion; ?></td></tr>
-            <tr><td>Nationality</td><td><?php echo $nationality; ?></td></tr>
+            <tr> <th>p_id</th><th>p_lname</th><th>p_fname</th><th>p_middle</th><th>p_bdate</th><th>p_sex</th><th>p_civilstatus</th><th>p_taxno</th><th>p_religion</th><th>p_nationality</th></tr>
+            <?php foreach ($_SESSION['users'] as $formData): ?>
+                <?php if (!empty(array_filter($formData))): ?>
+                <tr>
+                    <td><?php echo $formData['personalId'] ?? ''; ?></td>
+                    <td><?php echo $formData['personal_lastname'] ?? ''; ?></td>
+                    <td><?php echo $formData['personal_firstname'] ?? ''; ?></td>
+                    <td><?php echo $formData['personal_middle'] ?? ''; ?></td>
+                    <td><?php echo $formData['dob'] ?? ''; ?></td>
+                    <td><?php echo $formData['sex'] ?? ''; ?></td>
+                    <td><?php echo $formData['civilStatus'] ?? ''; ?></td>
+                    <td><?php echo $formData['taxId'] ?? ''; ?></td>
+                    <td><?php echo $formData['religion'] ?? ''; ?></td>
+                    <td><?php echo $formData['nationality'] ?? ''; ?></td>
+                </tr>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </table>
 
         <h2>Place of Birth</h2>
         <table class="info-table">
-            <tr><th>Field</th><th>Information</th></tr>
-            <tr><td>Unit No. & Bldg. Name</td><td><?php echo $birthunit; ?></td></tr>
-            <tr><td>House/Lot & Blk. No</td><td><?php echo $birthblk; ?></td></tr>
-            <tr><td>Street Name</td><td><?php echo $birthstreetName; ?></td></tr>
-            <tr><td>Subdivision</td><td><?php echo $birthsubdivision; ?></td></tr>
-            <tr><td>Brgy/District/Locality</td><td><?php echo $birthbarangay; ?></td></tr>
-            <tr><td>City/Municipality</td><td><?php echo $birthcity; ?></td></tr>
-            <tr><td>Country</td><td><?php echo $birthcountry; ?></td></tr>
-            <tr><td>Province</td><td><?php echo $birthprovince; ?></td></tr>
-            <tr><td>Zip Code</td><td><?php echo $birthzipCode; ?></td></tr>
+            <tr><th>pob_id</th><th>pob_unitno</th><th>pob_blk</th><th>pob_sn</th><th>pob_subdivision</th><th>pob_barangay</th><th>pob_city</th><th>pob_country</th><th>pob_province</th><th>pob_zipcode</th></tr>
+            <?php foreach ($_SESSION['users'] as $formData): ?>
+                <?php if (!empty(array_filter($formData))): ?>
+                <tr>
+                    <td><?php echo $formData['placeOfBirthId'] ?? ''; ?></td>
+                    <td><?php echo $formData['bldg'] ?? ''; ?></td>
+                    <td><?php echo $formData['blk'] ?? ''; ?></td>
+                    <td><?php echo $formData['sn'] ?? ''; ?></td>
+                    <td><?php echo $formData['subdivision'] ?? ''; ?></td>
+                    <td><?php echo $formData['barangay'] ?? ''; ?></td>
+                    <td><?php echo $formData['city'] ?? ''; ?></td>
+                    <td><?php echo $formData['country'] ?? ''; ?></td>
+                    <td><?php echo $formData['province'] ?? ''; ?></td>
+                    <td><?php echo $formData['bzip'] ?? ''; ?></td>
+                </tr>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </table>
+        
+    <h2>Home Address</h2>
+    <table class="info-table">
+        <tr><th>ha_id</th><th>ha_unitno</th><th>ha_blkno</th><th>ha_sn</th><th>ha_subdivision</th><th>ha_barangay</th><th>ha_city</th><th>ha_country</th><th>ha_province</th><th>ha_zipcode</th></tr>
+        <?php foreach ($_SESSION['users'] as $formData): ?>
+        <?php if (!empty(array_filter($formData))): ?>
+    <tr>
+        <td><?php echo $formData['homeAddressId'] ?? ''; ?></td>
+        <td><?php echo $formData['hbldg'] ?? ''; ?></td>
+        <td><?php echo $formData['hblk'] ?? ''; ?></td>
+        <td><?php echo $formData['hsn'] ?? ''; ?></td>
+        <td><?php echo $formData['hsubdivision'] ?? ''; ?></td>
+        <td><?php echo $formData['hbarangay'] ?? ''; ?></td>
+        <td><?php echo $formData['hcity'] ?? ''; ?></td>
+        <td><?php echo $formData['hcountry'] ?? ''; ?></td>
+        <td><?php echo $formData['hprovince'] ?? ''; ?></td>
+        <td><?php echo $formData['hzip'] ?? ''; ?></td>
+    </tr>
+       <?php endif; ?>
+       <?php endforeach; ?>
+       </table>
 
-        
-        <h2>Home Address</h2>
-        <table class="info-table">
-            <tr><th>Field</th><th>Information</th></tr>
-            <tr><td>Unit No. & Bldg. Name</td><td><?php echo $unit; ?></td></tr>
-            <tr><td>House/Lot & Blk. No</td><td><?php echo $blk; ?></td></tr>
-            <tr><td>Street Name</td><td><?php echo $streetName; ?></td></tr>
-            <tr><td>Subdivision</td><td><?php echo $subdivision; ?></td></tr>
-            <tr><td>Brgy/District/Locality</td><td><?php echo $barangay; ?></td></tr>
-            <tr><td>City/Municipality</td><td><?php echo $city; ?></td></tr>
-            <tr><td>Country</td><td><?php echo $country; ?></td></tr>
-            <tr><td>Province</td><td><?php echo $province; ?></td></tr>
-            <tr><td>Zip Code</td><td><?php echo $zipCode; ?></td></tr>
-            <tr><td>Mobile Number</td><td><?php echo $mobile; ?></td></tr>
-            <tr><td>Email</td><td><?php echo $email; ?></td></tr>
-            <tr><td>Telephone Number</td><td><?php echo $telephone; ?></td></tr>
-        </table>
 
-        <h2>Parents' Information</h2>
-        <table class="info-table">
-            <tr><th>Field</th><th>Information</th></tr>
-            <tr><td>Father's Name</td><td><?php echo "$fatherlastName, $fatherfirstName $fathermiddleName"; ?></td></tr>
-            <tr><td>Mother's Name</td><td><?php echo "$motherlastName, $motherfirstName $mothermiddleName"; ?></td></tr>
-        </table>
+    <h2>Contact Info</h2>
+    <table class="info-table">
+    <tr><th>ha_email</th> <th>ha_telno</th> <th>ha_mobileno</th></tr>
+    <?php foreach ($_SESSION['users'] as $formData): ?>
+    <?php if (!empty(array_filter($formData))): ?>
+    <tr>
+        <td><?php echo $formData['email'] ?? ''; ?></td>
+        <td><?php echo $formData['tel'] ?? ''; ?></td>
+        <td><?php echo $formData['number'] ?? ''; ?></td>
+    </tr>
+    <?php endif; ?>
+    <?php endforeach; ?>
+       </table>
+    
+    <h2>Father's Information</h2>
+    <table class="info-table">
+    <tr><th>f_id</th><th>f_lname</th><th>f_fname</th><th>f_middle</th></tr>
+    <?php foreach ($_SESSION['users'] as $formData): ?>
+    <?php if (!empty(array_filter($formData))): ?>
+        <tr>
+            <td><?php echo $formData['fatherId'] ?? ''; ?></td>
+            <td><?php echo $formData['father_lastname'] ?? ''; ?></td>
+            <td><?php echo $formData['father_firstname'] ?? ''; ?></td>
+            <td><?php echo $formData['father_middle'] ?? ''; ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php endforeach; ?>
+    </table>
+
+    <h2>Mother's Information</h2>
+    <table class="info-table">
+    <tr><th>m_id</th><th>m_lname</th><th>m_fname</th><th>m_middle</th></tr>
+    <?php foreach ($_SESSION['users'] as $formData): ?>
+    <?php if (!empty(array_filter($formData))): ?>
+        <tr>
+            <td><?php echo $formData['motherId'] ?? ''; ?></td>
+            <td><?php echo $formData['mother_lastname'] ?? ''; ?></td>
+            <td><?php echo $formData['mother_firstname'] ?? ''; ?></td>
+            <td><?php echo $formData['mother_middle'] ?? ''; ?></td>
+        </tr>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    </table>
         
-        
+        <div class="nbutton">
+            <button onclick="window.location.href='index.php'" class="backBtn">Add</button>
+            <button onclick="window.location.href='index.php'" class="backBtn">Update</button>
+            <button onclick="window.location.href='index.php'" class="backBtn">Delete</button>
+        </div>
 
         </section>
     </div>

@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 include 'db.php';
 
@@ -11,6 +10,10 @@ function calculateAge($dob) {
 
 $errors = [];
 $success = false;
+
+if (!isset($_SESSION['users'])) {
+    $_SESSION['users'] = [];
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Collect and sanitize input data
@@ -54,44 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $motherfirstName = trim($_POST['mother_firstname'] ?? '');
     $mothermiddleName = trim($_POST['mother_middle'] ?? '');
 
-    
-    if (empty($errors)) {
-        // Insert into tbl_personal
-        $stmt = $conn->prepare("INSERT INTO tbl_personal (p_lname, p_fname, p_middle, p_bdate, p_sex, p_civilstatus, p_taxno, p_religion, p_nationality) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssss", $lastName, $firstName, $middleName, $dateOfBirth, $sex, $civilStatus, $taxId, $religion, $nationality);
-        $stmt->execute();
-        $personalId = $stmt->insert_id; // Get the last inserted ID
-        $stmt->close();
-
-        // Insert into tbl_placeofbirth
-        $stmt = $conn->prepare("INSERT INTO tbl_placeofbirth (pob_unitno, pob_blk, pob_sn, pob_subdivision, pob_barangay, pob_city, pob_country, pob_province, pob_zipcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssss", $birthunit, $birthblk, $birthstreetName, $birthsubdivision, $birthbarangay, $birthcity, $birthcountry, $birthprovince, $birthzipCode);
-        $stmt->execute();
-        $placeOfBirthId = $stmt->insert_id; // Get the last inserted ID
-        $stmt->close();
-
-        // Insert into tbl_hadress
-        $stmt = $conn->prepare("INSERT INTO tbl_hadress (ha_unitno, ha_blkno, ha_sn, ha_subdivision, ha_barangay, ha_city, ha_country, ha_province, ha_zipcode, ha_mobileno, ha_email, ha_telno) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssssssss", $unit, $blk, $streetName, $subdivision, $barangay, $city, $country, $province, $zipCode, $mobile, $email, $telephone);
-        $stmt->execute();
-        $homeAddressId = $stmt->insert_id; // Get the last inserted ID
-        $stmt->close();
-
-        // Insert into tbl_minfo (Mother's Information)
-        $stmt = $conn->prepare("INSERT INTO tbl_minfo (m_lname, m_fname, m_middle) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $motherlastName, $motherfirstName, $mothermiddleName);
-        $stmt->execute();
-        $motherId = $stmt->insert_id; // Get the last inserted ID
-        $stmt->close();
-
-        // Insert into tbl_finfo (Father's Information)
-        $stmt = $conn->prepare("INSERT INTO tbl_finfo (f_lname, f_fname, f_middle) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $fatherlastName, $fatherfirstName, $fathermiddleName);
-        $stmt->execute();
-        $fatherId = $stmt->insert_id; // Get the last inserted ID
-        $stmt->close();
-     }
-   
     if (empty($lastName) || preg_match('/[0-9]/', $lastName)) {
         $errors['personal_lastname'] = "Last Name must not contain numbers.";
     }
@@ -193,15 +158,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors['tel'] = "Telephone Number must contain numbers only.";
     }
 
-    
     if (empty($errors)) {
-        $_SESSION['form_data'] = [
+        // Insert into tbl_personal
+        $stmt = $conn->prepare("INSERT INTO tbl_personal (p_lname, p_fname, p_middle, p_bdate, p_sex, p_civilstatus, p_taxno, p_religion, p_nationality) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $lastName, $firstName, $middleName, $dateOfBirth, $sex, $civilStatus, $taxId, $religion, $nationality);
+        $stmt->execute();
+        $personalId = $stmt->insert_id; // Get the last inserted ID
+        $stmt->close();
+
+        // Insert into tbl_placeofbirth
+        $stmt = $conn->prepare("INSERT INTO tbl_placeofbirth (pob_unitno, pob_blk, pob_sn, pob_subdivision, pob_barangay, pob_city, pob_country, pob_province, pob_zipcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssss", $birthunit, $birthblk, $birthstreetName, $birthsubdivision, $birthbarangay, $birthcity, $birthcountry, $birthprovince, $birthzipCode);
+        $stmt->execute();
+        $placeOfBirthId = $stmt->insert_id; // Get the last inserted ID
+        $stmt->close();
+
+        // Insert into tbl_hadress
+        $stmt = $conn->prepare("INSERT INTO tbl_hadress (ha_unitno, ha_blkno, ha_sn, ha_subdivision, ha_barangay, ha_city, ha_country, ha_province, ha_zipcode, ha_mobileno, ha_email, ha_telno) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssssssss", $unit, $blk, $streetName, $subdivision, $barangay, $city, $country, $province, $zipCode, $mobile, $email, $telephone);
+        $stmt->execute();
+        $homeAddressId = $stmt->insert_id; // Get the last inserted ID
+        $stmt->close();
+
+        // Insert into tbl_minfo (Mother's Information)
+        $stmt = $conn->prepare("INSERT INTO tbl_minfo (m_lname, m_fname, m_middle) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $motherlastName, $motherfirstName, $mothermiddleName);
+        $stmt->execute();
+        $motherId = $stmt->insert_id; // Get the last inserted ID
+        $stmt->close();
+
+        // Insert into tbl_finfo (Father's Information)
+        $stmt = $conn->prepare("INSERT INTO tbl_finfo (f_lname, f_fname, f_middle) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $fatherlastName, $fatherfirstName, $fathermiddleName);
+        $stmt->execute();
+        $fatherId = $stmt->insert_id; // Get the last inserted ID
+        $stmt->close();
+        
+        $_SESSION['users'][] = [
             'personalId' => $personalId,
             'placeOfBirthId' => $placeOfBirthId,
             'homeAddressId' => $homeAddressId,
             'motherId' => $motherId,
             'fatherId' => $fatherId,
-
             'personal_lastname' => $lastName, 
             'personal_firstname'=> $firstName, 
             'personal_middle'=> $middleName, 
