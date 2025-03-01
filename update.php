@@ -1,332 +1,145 @@
 <?php
 session_start();
-include 'db.php';
+include 'db.php'; // Include the database connection
 
+if (!isset($_GET['id'])) {
+    header("Location: index.php");
+    exit();
+}
 
-$errors = [];
-$success = false;
+$id = intval($_GET['id']);
 
-
-if (isset($_GET['id'])) {
-    $personalId = intval($_GET['id']);
-    
-   
+// Fetch the existing data for the record to be edited
 $stmt = $conn->prepare("SELECT * FROM tbl_personal WHERE p_id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$personal = $stmt->get_result();
-$record = $personal->fetch_assoc();
+$personalResult = $stmt->get_result();
+$record = $personalResult->fetch_assoc();
 $stmt->close();
 
-
+// Fetch related data from other tables
 $stmt = $conn->prepare("SELECT * FROM tbl_placeofbirth WHERE pob_id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$placeofbirth = $stmt->get_result();
-$birthRecord =  $placeofbirth->fetch_assoc();
+$birthResult = $stmt->get_result();
+$birthRecord = $birthResult->fetch_assoc();
 $stmt->close();
 
 $stmt = $conn->prepare("SELECT * FROM tbl_hadress WHERE ha_id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$hadress = $stmt->get_result();
-$addressRecord =  $hadress->fetch_assoc();
+$addressResult = $stmt->get_result();
+$addressRecord = $addressResult->fetch_assoc();
 $stmt->close();
 
 $stmt = $conn->prepare("SELECT * FROM tbl_minfo WHERE m_id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$minfo = $stmt->get_result();
-$contactRecord = $minfo->fetch_assoc();
+$contactResult = $stmt->get_result();
+$contactRecord = $contactResult->fetch_assoc();
 $stmt->close();
 
 $stmt = $conn->prepare("SELECT * FROM tbl_finfo WHERE f_id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$finfo = $stmt->get_result();
-$parentsRecord =  $finfo->fetch_assoc();
+$parentsResult = $stmt->get_result();
+$parentsRecord = $parentsResult->fetch_assoc();
 $stmt->close();
 
-}
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Collect and sanitize input data
-    $lastName = trim($_POST['personal_lastname'] ?? '');
-    $firstName = trim($_POST['personal_firstname'] ?? '');
-    $middleName = trim($_POST['personal_middle'] ?? '');
-    $dateOfBirth = $_POST['date'] ?? '';
-    $sex = $_POST['sex'] ?? '';
-    $civilStatus = $_POST['civil_status'] ?? '';
-    $taxId = trim($_POST['tax'] ?? '');
-    $nationality = trim($_POST['nationality'] ?? '');
-    $religion = trim($_POST['religion'] ?? '');
-
-    $birthunit = trim($_POST['bldg'] ?? '');
-    $birthblk = trim($_POST['blk'] ?? '');
-    $birthstreetName = trim($_POST['sn'] ?? '');
-    $birthsubdivision = trim($_POST['subdivision'] ?? '');
-    $birthbarangay = trim($_POST['barangay'] ?? '');
-    $birthcity = trim($_POST['city'] ?? '');
-    $birthprovince = trim($_POST['province'] ?? '');
-    $birthcountry = $_POST['country'] ?? '';
-    $birthzipCode = trim($_POST['bzip'] ?? '');
-
-    $unit = trim($_POST['hbldg'] ?? '');
-    $blk = trim($_POST['hblk'] ?? '');
-    $streetName = trim($_POST['hsn'] ?? '');
-    $subdivision = trim($_POST['hsubdivision'] ?? '');
-    $barangay = trim($_POST['hbarangay'] ?? '');
-    $city = trim($_POST['hcity'] ?? '');
-    $province = trim($_POST['hprovince'] ?? '');
-    $country = $_POST['hcountry'] ?? '';
-    $zipCode = trim($_POST['hzip'] ?? '');
-    $mobile = trim($_POST['number'] ?? '');
-    $telephone = trim($_POST['tel'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-
-    $fatherlastName = trim($_POST['father_lastname'] ?? '');
-    $fatherfirstName = trim($_POST['father_firstname'] ?? '');
-    $fathermiddleName = trim($_POST['father_middle'] ?? '');
-    $motherlastName = trim($_POST['mother_lastname'] ?? '');
-    $motherfirstName = trim($_POST['mother_firstname'] ?? '');
-    $mothermiddleName = trim($_POST['mother_middle'] ?? '');
-
-    if (empty($lastName) || preg_match('/[0-9]/', $lastName)) {
-        $errors['personal_lastname'] = "Last Name must not contain numbers.";
-    }
-    if (empty($firstName) || preg_match('/[0-9]/', $firstName)) {
-        $errors['personal_firstname'] = "First Name must not contain numbers.";
-    }
-    if (empty($middleName) || preg_match('/[0-9]/', $middleName)) {
-        $errors['personal_middle'] = "Middle Name must not contain numbers.";
-    }
-    if (empty($fatherlastName) || preg_match('/[0-9]/', $fatherlastName)) {
-        $errors['father_lastname'] = "Father's Last Name must not contain numbers.";
-    }
-    if (empty($fatherfirstName) || preg_match('/[0-9]/', $fatherfirstName)) {
-        $errors['father_firstname'] = "Father's First Name must not contain numbers.";
-    }
-    if (empty($fathermiddleName) || preg_match('/[0-9]/', $fathermiddleName)) {
-        $errors['father_middle'] = "Father's Middle Name must not contain numbers.";
-    }
-    if (empty($motherlastName) || preg_match('/[0-9]/', $motherlastName)) {
-        $errors['mother_lastname'] = "Mother's Last Name must not contain numbers.";
-    }
-    if (empty($motherfirstName) || preg_match('/[0-9]/', $motherfirstName)) {
-        $errors['mother_firstname'] = "Mother's First Name must not contain numbers.";
-    }
-    if (empty($mothermiddleName) || preg_match('/[0-9]/', $mothermiddleName)) {
-        $errors['mother_middle'] = "Mother's Middle Name must not contain numbers.";
-    }
-    if (empty($dateOfBirth)) {
-        $errors['date'] = "Invalid Date of Birth.";
-    } elseif (calculateAge($dateOfBirth) < 18) {
-        $errors['date'] = "You must be at least 18 years old.";
-    }
-    if (empty($sex)) {
-        $errors['sex'] = "Select a Gender.";
-    }
-    if (empty($civilStatus)) {
-        $errors['civil_status'] = "Select a Civil Status.";
-    }
-    if (empty($taxId) || !preg_match('/^[0-9]+$/', $taxId)) {
-        $errors['tax'] = "Tax ID must contain numbers only.";
-    }
-    if (empty($nationality)) {
-        $errors['nationality'] = "Field is required.";
-    }
-    if (empty($religion)) {
-        $religion = "N/A";
-    }
-    if (empty($birthunit)) {
-        $errors['bldg'] = "Field is required.";
-    }
-    if (empty($birthblk)) {
-        $errors['blk'] = "Field is required.";
-    }
-    if (empty($birthstreetName)) {
-        $errors['sn'] = "Field is required.";
-    }
-    if (empty($birthcity)) {
-        $birthcity = "N/A";
-    }
-    if (empty($birthprovince)) {
-        $birthprovince = "N/A";
-    }
-    if (empty($birthzipCode) || !preg_match('/^[0-9]+$/', $birthzipCode)) {
-        $errors['bzip'] = "Birth Zipcode must contain numbers only.";
-    }
-    if (empty($birthcountry)) {
-        $birthcountry = "N/A";
-    }
-    if (empty($unit)) {
-        $errors['hbldg'] = "Field is required.";
-    }
-    if (empty($blk)) {
-        $errors['hblk'] = "Field is required.";
-    }
-    if (empty($streetName)) {
-        $errors['hsn'] = "Field is required.";
-    }
-    if (empty($city)) {
-        $city = "N/A";
-    }
-    if (empty($province)) {
-        $province = "N/A";
-    }
-    if (empty($zipCode) || !preg_match('/^[0-9]+$/', $zipCode)) {
-        $errors['hzip'] = "Zip Code must contain numbers only.";
-    }
-    if (empty($country)) {
-        $country = "N/A";
-    }
-    if (empty($mobile)) {
-        $errors['number'] = "Field is required.";
-    } elseif (!preg_match('/^[0-9]+$/', $mobile)) {
-        $errors['number'] = "Mobile Phone must contain numbers only.";
-    }
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = "Invalid email format.";
-    }
-    if (empty($telephone) || !preg_match('/^[0-9]+$/', $telephone)) {
-        $errors['tel'] = "Telephone Number must contain numbers only.";
-    }
-
-    if (empty($errors)) {
-        $_SESSION['form_data'] = [
-            'personalId' => $personalId,
-            'placeOfBirthId' => $placeOfBirthId,
-            'homeAddressId' => $homeAddressId,
-            'motherId' => $motherId,
-            'fatherId' => $fatherId,
-
-            'personal_lastname' => $lastName, 
-            'personal_firstname'=> $firstName, 
-            'personal_middle'=> $middleName, 
-            'dob' => $dateOfBirth,
-            'age' => calculateAge($dateOfBirth),
-            'sex' => $sex,
-            'civilStatus' => $civilStatus,
-            'taxId' => $taxId,
-            'nationality' => $nationality,
-            'religion' => $religion,
-
-            'birth' => [
-                'bldg' => $birthunit,
-                'blk' => $birthblk,
-                'sn' => $birthstreetName,
-                'subdivision' => $birthsubdivision,
-                'barangay' => $birthbarangay,
-                'city' => $birthcity,
-                'province' => $birthprovince,
-                'country' => $birthcountry,
-                'bzip' => $birthzipCode,
-            ],
-            'address' => [
-                'hbldg' => $unit,
-                'hblk' => $blk,
-                'hsn' => $streetName,
-                'hsubdivision' => $subdivision,
-                'hbarangay' => $barangay,
-                'hcity' => $city,
-                'hprovince' => $province,
-                'hcountry' => $country,
-                'hzip' => $zipCode,
-                'number' => $mobile,
-                'tel' => $telephone,
-                'email' => $email,
-            ],
-           
-            'father_lastname' => $fatherlastName,
-            'father_firstname' => $fatherfirstName,
-            'father_middle' => $fathermiddleName,
-            'mother_lastname' => $motherlastName,
-            'mother_firstname' => $motherfirstName,
-            'mother_middle' => $mothermiddleName,
-        ];
-
-       
-    $updatePersonal = $conn->prepare("UPDATE tbl_personal SET p_lname = ?, p_fname = ?, p_middle = ?, p_bdate = ?, p_sex = ?, p_civilstatus = ?, p_taxno = ?, p_religion = ?, p_nationality = ? WHERE p_id = ?");
-    $updatePersonal->bind_param("sssssssssi", $lastName, $firstName, $middleName, $dateOfBirth, $sex, $civilStatus, $taxId, $nationality, $religion, $id);
+    // Collect updated data with checks
+    $lastName = isset($_POST['personal_lastname']) ? trim($_POST['personal_lastname']) : '';
+    $firstName = isset($_POST['personal_firstname']) ? trim($_POST['personal_firstname']) : '';
+    $middleName = isset($_POST['personal_middle']) ? trim($_POST['personal_middle']) : '';
+    $dateOfBirth = isset($_POST['date']) ? $_POST['date'] : '';
+    $sex = isset($_POST['sex']) ? $_POST['sex'] : '';
+    $civilStatus = isset($_POST['civil_status']) ? $_POST['civil_status'] : '';
+    $taxId = isset($_POST['tax']) ? trim($_POST['tax']) : '';
+    $nationality = isset($_POST['nationality']) ? trim($_POST['nationality']) : '';
+    $religion = isset($_POST['religion']) ? trim($_POST['religion']) : '';
     
-    if (!$updatePersonal->execute()) {
-        error_log("Error updating tbl_personal: " . $updatePersonal);
-    }
-    $updatePersonal->close();
-
-    $birthUnit = $_POST['bldg'];
-    $birthBlkNo = $_POST['blk'];
-    $birthStreetName = $_POST['sn'];
-    $birthSubdivision = $_POST['subdivision'];
-    $birthBrgy = $_POST['barangay'];
-    $birthCity = $_POST['city'];
-    $birthProvince = $_POST['province'];
-    $birthCountry = $_POST['country'];
-    $birthZipCode = $_POST['bzip'];
-
-    $updateBirth = $conn->prepare("UPDATE tbl_placeofbirth SET pob_unitno = ?, pob_blk = ?, pob_sn = ?, pob_subdivision = ?, pob_barangay = ?, pob_city = ?, pob_country = ?, pob_province = ?, pob_zipcode = ? WHERE pob_id = ?");
-    $updateBirth->bind_param("issssssssi", $birthUnit, $birthblk, $birthstreetName, $birthsubdivision, $birthbarangay, $birthcity, $birthprovince, $birthcountry, $birthzipCode, $id);
+    // Update the record in the tbl_personal table
+    $updatePersonalStmt = $conn->prepare("UPDATE tbl_personal SET p_lname = ?, p_fname = ?, p_middle = ?, p_bdate = ?, p_sex = ?, p_civilstatus = ?, p_taxno = ?, p_nationality = ?, p_religion = ? WHERE p_id = ?");
+    $updatePersonalStmt->bind_param("sssssssssi", $lastName, $firstName, $middleName, $dateOfBirth, $sex, $civilStatus, $taxId, $nationality, $religion, $id);
     
-    if (!$updateBirth->execute()) {
-        error_log("Error updating tbl_placeofbirth: " . $updateBirth->error);
+    if (!$updatePersonalStmt->execute()) {
+        error_log("Error updating tbl_personal: " . $updatePersonalStmt->error);
     }
-    $updateBirth->close();
+    $updatePersonalStmt->close();
 
-    $unit = $_POST['hbldg'];
-    $blk = $_POST['hblk'];
-    $streetName = $_POST['hsn'];
-    $subdivision = $_POST['hsubdivision'];
-    $barangay = $_POST['hbarangay'];
-    $city = $_POST['hcity'];
-    $province = $_POST['hprovince'];
-    $country = $_POST['hcountry'];
-    $zipCode = $_POST['hzip'];
-    $mobile = $_POST['number'];
-    $telephone = $_POST['tel'];
-    $email = $_POST['email'];
+    // Update the record in the tbl_placeofbirth table
+    $birthunit = isset($_POST['bldg']) ? $_POST['bldg'] : '';
+    $birthblk = isset($_POST['blk']) ? $_POST['blk'] : '';
+    $birthstreetName = isset($_POST['sn']) ? $_POST['sn'] : '';
+    $birthsubdivision = isset($_POST['subdivision']) ? $_POST['subdivision'] : '';
+    $birthbarangay = isset($_POST['barangay']) ? $_POST['barangay'] : '';
+    $birthcity = isset($_POST['city']) ? $_POST['city'] : '';
+    $birthprovince = isset($_POST['province']) ? $_POST['province'] : '';
+    $birthcountry = isset($_POST['country']) ? $_POST['country'] : '';
+    $birthzipCode = isset($_POST['bzip']) ? $_POST['bzip'] : '';
 
-
-    $updateHomeAddress = $conn->prepare("UPDATE tbl_hadress SET ha_unitno = ?, ha_blkno = ?, ha_sn = ?, ha_subdivision = ?, ha_barangay = ?, ha_city = ?, ha_country = ?, ha_province = ?, h_zipcode, ha_email, ha_telno, ha_mobileno = ? WHERE ha_id = ?");
-    $updateHomeAddress->bind_param("isssssssssssi", $unit, $blk, $streetName, $subdivision, $barangay, $city, $country, $province, $zipCode, $email, $telephone, $mobile, $id);
+    $updateBirthStmt = $conn->prepare("UPDATE tbl_placeofbirth SET pob_unitno = ?, pob_blk = ?, pob_sn = ?, pob_subdivision = ?, pob_barangay = ?, pob_city = ?, pob_province = ?, pob_country = ?, pob_zipcode = ? WHERE pob_id = ?");
+    $updateBirthStmt->bind_param("issssssssi", $birthunit, $birthblkno, $birthstreetName, $birthsubdivision, $birthbarangay, $birthcity, $birthprovince, $birthcountry, $birthzipCode, $id);
     
-    if (!$updateHomeAddress->execute()) {
-        error_log("Error updating tbl_hadress: " . $updateHomeAddress->error);
+    if (!$updateBirthStmt->execute()) {
+        error_log("Error updating tbl_placeofbirth: " . $updateBirthStmt->error);
     }
-    $updateHomeAddress->close();
+    $updateBirthStmt->close();
 
+    // Update the record in the tbl_hadress table
+    $unit = isset($_POST['hbldg']) ? $_POST['hbldg'] : '';
+    $blk = isset($_POST['hblk']) ? $_POST['hblk'] : '';
+    $streetName = isset($_POST['hsn']) ? $_POST['hsn'] : '';
+    $subdivision = isset($_POST['hsubdivision']) ? $_POST['hsubdivision'] : '';
+    $barangay = isset($_POST['hbarangay']) ? $_POST['hbarangay'] : '';
+    $city = isset($_POST['hcity']) ? $_POST['hcity'] : '';
+    $province = isset($_POST['hprovince']) ? $_POST['hprovince'] : '';
+    $country = isset($_POST['hcountry']) ? $_POST['hcountry'] : '';
+    $zipCode = isset($_POST['hzip']) ? $_POST['hzip'] : '';
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $telephone = isset($_POST['tel']) ? $_POST['tel'] : '';
+    $mobile = isset($_POST['number']) ? $_POST['number'] : '';
+
+    $updateHomeAddressStmt = $conn->prepare("UPDATE tbl_hadress SET ha_unitno = ?, ha_blkno = ?, ha_sn = ?, ha_subdivision = ?, ha_barangay = ?, ha_city = ?, ha_province = ?, ha_country = ?, ha_zipcode = ?, ha_email = ?, ha_telno = ?, ha_mobileno = ? WHERE ha_id = ?");
+    $updateHomeAddressStmt->bind_param("issssssssssi", $unit, $blk, $streetName, $subdivision, $barangay, $city, $province, $country, $zipCode, $email, $telephone, $mobile, $id);
     
-    $fatherLastName = $_POST['father_lastname'];
-    $fatherFirstName = $_POST['father_firstname'];
-    $fatherMiddleName = $_POST['father_middle'];
-   
-    $updateFathersinfo = $conn->prepare("UPDATE tbl_finfo SET f_lname = ?, f_fname = ?, f_middle = ? WHERE f_id = ?");
-    $updateFathersinfo ->bind_param("sssi", $fatherlastName, $fatherfirstName, $fathermiddleName, $id);
-
-   
-    if (!$updateFathersinfo->execute()) {
-        error_log("Error updating tbl_finfo: " . $updateFathersinfo->error);
+    if (!$updateHomeAddressStmt->execute()) {
+        error_log("Error updating tbl_hadress: " . $updateHomeAddressStmt->error);
     }
-    $updateFathersinfo->close();
+    $updateHomeAddressStmt->close();
 
-    $motherLastName = $_POST['mother_lastname'];
-    $motherFirstName = $_POST['mother_firstname'];
-    $motherMiddleName = $_POST['mother_middle'];
+    // Update the record in the tbl_finfo table
+    $fatherlastName = isset($_POST['father_lastname']) ? $_POST['father_lastname'] : '';
+    $fatherfirstName = isset($_POST['father_firstname']) ? $_POST['father_firstname'] : '';
+    $fathermiddleName = isset($_POST['father_middle']) ? $_POST['father_middle'] : '';
 
-    $updateMothersinfo = $conn->prepare("UPDATE tbl_minfo SET m_lname = ?, m_fname = ?, m_middle = ? WHERE m_id = ?");
-    $updateMothersinfo->bind_param("sssi", $motherlastName, $motherfirstName, $mothermiddleName, $id);
-
-    if (! $updateMothersinfo->execute()) {
-        error_log("Error updating tbl_parents: " .  $updateMothersinfo->error);
+    $updateFathersInfoStmt = $conn->prepare("UPDATE tbl_finfo SET f_lname = ?, f_fname = ?, f_middle = ? WHERE f_id = ?");
+    $updateFathersInfoStmt->bind_param("sssi", $fatherlastName, $fatherfirstName, $fathermiddleName, $id);
+    
+    if (!$updateFathersInfoStmt->execute()) {
+        error_log("Error updating tbl_finfo: " . $updateFathersInfoStmt->error);
     }
-    $updateMothersinfo->close();
+    $updateFathersInfoStmt->close();
 
-           
-            header("Location: details.php");
-            exit();
-        }
+    // Update the record in the tbl_minfo table
+    $motherlastName = isset($_POST['mother_lastname']) ? $_POST['mother_lastname'] : '';
+    $motherfirstName = isset($_POST['mother_firstname']) ? $_POST['mother_firstname'] : '';
+    $mothermiddleName = isset($_POST['mother_middle']) ? $_POST['mother_middle'] : '';
+
+    $updateMothersInfoStmt = $conn->prepare("UPDATE tbl_minfo SET m_lname = ?, m_fname = ?, m_middle = ? WHERE m_id = ?");
+    $updateMothersInfoStmt->bind_param("sssi", $motherlastName, $motherfirstName, $mothermiddleName, $id);
+    
+    if (!$updateMothersInfoStmt->execute()) {
+        error_log("Error updating tbl_minfo: " . $updateMothersInfoStmt->error);
+    }
+    $updateMothersInfoStmt->close();
+
+    // Redirect back to the details page
+    header("Location: details.php");
+    exit();
 }
 
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -334,243 +147,290 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Data Form</title>
-    <link rel="stylesheet" href="style.css">
-    <script>
-        function toggleOthersField() {
-            var status = document.getElementById("civil_status").value;
-            var othersField = document.getElementById("others_input");
-            othersField.style.display = (status === "Others") ? "block" : "none";
-        }
-    </script>
+    <title>Edit Personal Data</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-<div class="wrapper">
-    <header class="header">
-        <h2>Test_<span>Form</span></h2>
-    </header>
-    <div class="main">
-        <section class="container">
-            <form action="index.php" method="POST" class="form">
-                <h1>Personal Data</h1>
-                <div class="input-box">
-                    <label for="personal_lastname">Last Name</label>
-                    <input type="text" name="personal_lastname" placeholder="Enter last Name" required value="<?= htmlspecialchars($record['p_lname']) ?>">
-                </div>
-                <div class="input-box">
-                    <label for="personal_firstname">First Name</label>
-                    <input type="text" name="personal_firstname" placeholder="Enter First Name" required value="<?= htmlspecialchars($record['p_fname']) ?>">
-                </div>
-                <div class="column">
+<div class="container">
+    
+    <form action="" method="POST">
+        <div class="form first">
+            <div class="details personal">
+                <h1>Edit Personal Data</h1>
+
+                <div class="fields">
                     <div class="input-box">
-                        <label for="personal_middle">Middle Name</label>
+                        <label>Last Name</label>
+                        <input type="text" name="personal_lastname" placeholder="Enter last Name" required value="<?= htmlspecialchars($record['p_lname']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>First Name</label>
+                        <input type="text" name="personal_firstname" placeholder="Enter First Name" required value="<?= htmlspecialchars($record['p_fname']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>Middle Initial</label>
                         <input type="text" name="personal_middle" placeholder="Enter Middle Initial" required value="<?= htmlspecialchars($record['p_middle']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="date">Date of Birth</label>
+                        <label for="date">Date of Birth:</label>
                         <input type="date" id="date" name="date" required value="<?= htmlspecialchars($record['p_bdate']) ?>">
                     </div>
                 </div>
+
                 <div class="radio">
-                    <label>Sex:</label>
-                    <label for="Male">Male</label>
-                    <input type="radio" id="Male" name="sex" value="Male" required <?= ($record['p_sex'] == 'Male') ? 'checked' : ''; ?>>
-                    <label for="Female">Female</label>
-                    <input type="radio" id="Female" name="sex" value="Female" required <?= ($record['p_sex'] == 'Female') ? 'checked' : ''; ?>>
+                <label>Sex:</label>
+                <label for="Male">Male</label>  
+                <input type="radio" id="Male" name="sex" value="Male" required <?= ($record['p_sex'] == 'Male') ? 'checked' : '' ?>>
+                <label for="Female">Female</label>
+                <input type="radio" id="Female" name="sex" value="Female" required <?= ($record['p_sex'] == 'Female') ? 'checked' : '' ?>>
+                <label for="Female">Female</label>
                 </div>
+                
+
                 <div class="Select">
                     <label for="civil_status">Civil Status:</label>
-                    <select id="civil_status" name="civil_status" onchange="toggleOthersField()">
-                        <option value="">Select</option>
+                    <select id="civil_status" name="civil_status">
+                        <option value="">--Select--</option>
                         <option value="Single" <?= ($record['p_civilstatus'] == 'Single') ? 'selected' : '' ?>>Single</option>
+                        <option value="Married" <?= ($record['p_civilstatus'] == 'Married') ? 'selected' : '' ?>>Married</option>
                         <option value="Widowed" <?= ($record['p_civilstatus'] == 'Widowed') ? 'selected' : '' ?>>Widowed</option>
-                        <option value="Divorce" <?= ($record['p_civilstatus'] == 'Divorce') ? 'selected' : '' ?>>Divorced</option>
+                        <option value="Divorced" <?= ($record['p_civilstatus'] == 'Divorced') ? 'selected' : '' ?>>Divorced</option>
                         <option value="Separated" <?= ($record['p_civilstatus'] == 'Separated') ? 'selected' : '' ?>>Separated</option>
                         <option value="Others" <?= ($record['p_civilstatus'] == 'Others') ? 'selected' : '' ?>>Others</option>
                     </select>
-                    <input type="text" id="others_input" name="others" placeholder="Please specify civil status" style="display: none;">
                 </div>
-                <div class="column">
+
+                <div class="type">
                     <div class="input-box">
-                        <label for="tax">Tax Identification No.</label>
+                        <label>Tax Identification Number</label>
                         <input type="text" name="tax" id="tax" required value="<?= htmlspecialchars($record['p_taxno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="religion">Religion</label>
-                        <input type="text" name="religion" placeholder="Enter Religion" value="<?= htmlspecialchars($record['p_religion']) ?>">
-                    </div>
-                    <div class="input-box">
-                        <label for="nationality">Nationality</label>
+                        <label>Nationality</label>
                         <input type="text" name="nationality" placeholder="Enter Nationality" required value="<?= htmlspecialchars($record['p_nationality']) ?>">
                     </div>
+                    <div class="input-box">
+                        <label>Religion</label>
+                        <input type="text" name="religion" placeholder="Enter Religion" value="<?= htmlspecialchars($record['p_religion']) ?>">
+                    </div>
                 </div>
+
                 <h2>Place of Birth</h2>
-                <div class="column">
+                <div class="place">
                     <div class="input-box">
-                        <label for="bldg">RM/FLR/Unit No. & Bldg. Name</label>
-                        <input type="text" name="bldg" id="bldg" value="<?= htmlspecialchars($record['pob_unitno']) ?>">
+                        <label>Unit No. & Bldg. Name:</label>
+                        <input type="text" name="bldg" value="<?= htmlspecialchars($birthRecord['pob_unitno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="blk">House/Lot & Blk. No</label>
-                        <input type="text" name="blk" id="blk" value="<?= htmlspecialchars($record['pob_blk']) ?>">
+                        <label>House/Lot & Blk. No:</label>
+                        <input type="text" name="blk" value="<?= htmlspecialchars($birthRecord['pob_blk']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="sn">Street Name</label>
-                        <input type="text" name="sn" id="sn" value="<?= htmlspecialchars($record['pob_sn']) ?>">
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="input-box">
-                        <label for="subdivision">Subdivision</label>
-                        <input type="text" name="subdivision" id="subdivision" value="<?= htmlspecialchars($record['pob_subdivision']) ?>">
+                        <label>Street Name:</label>
+                        <input type="text" name="sn" value="<?= htmlspecialchars($birthRecord['pob_sn']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="barangay">Barangay/District</label>
-                        <input type="text" name="barangay" id="barangay" value="<?= htmlspecialchars($record['pob_barangay']) ?>">
-                    </div>
-                    <div class="input-box">
-                        <label for="city">City/Municipality</label>
-                        <input type="text" name="city" id="city" value="<?= htmlspecialchars($record['pob_city']) ?>">
+                        <label>Subdivision:</label>
+                        <input type="text" name="subdivision" value="<?= htmlspecialchars($birthRecord['pob_subdivision']) ?>">
                     </div>
                 </div>
+
+                <div class="home">
+                    <div class="input-box">
+                        <label>Barangay/District:</label>
+                        <input type="text" name="barangay" value="<?= htmlspecialchars($birthRecord['pob_barangay']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>City:</label>
+                        <input type="text" name="city" value="<?= htmlspecialchars($birthRecord['pob_city']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>Province:</label>
+                        <input type="text" name="province" value="<?= htmlspecialchars($birthRecord['pob_province']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>Zipcode:</label>
+                        <input type="text" name="bzip" value="<?= htmlspecialchars($birthRecord['pob_zipcode']) ?>">
+                    </div>
+                </div>
+
                 <div class="input-box">
                     <label>Country</label>
-                    <select name="country" id="country" required>
+                    <select name="country" id="hcountry" required>
                         <option value="" disabled selected>Select</option>
                         <?php
-                        // Assuming you have a function to get the countries
+                        $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
+                        "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
+                        "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
+                        "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
+                        "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
+                        "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
+                        "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
+                        "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
+                        "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
+                        "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
+                        "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
+                        "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
+                        "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
+                        "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
+                        "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
+                        "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
+                        "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
+                        "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
+                        "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
+                        "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
+                        "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
+                        "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
+                        "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
+                        "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
+                        "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
+                        "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
+                        "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
+                        "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
+                        "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"];
                         foreach ($countries as $country) {
-                            $selected = ($country == $placeOfBirth['pob_country']) ? 'selected' : '';
-                            echo "<option value=\"$country\" $selected>$country</option>";
+                            echo "<option value=\"$country\" " . ($country == $country ? 'selected' : '') . ">$country</option>";
                         }
                         ?>
                     </select>
                 </div>
-                <div class="column">
-                    <div class="input-box">
-                        <label for="province">Province</label>
-                        <input id="province" type="text" name="province" value="<?= htmlspecialchars($record['pob_province']) ?>">
-                    </div>
-                    <div class="input-box">
-                        <label for="bzip">Zip Code</label>
-                        <input type="text" name="bzip" id="bzip" value="<?= htmlspecialchars($record['pob_zipcode']) ?>">
-                    </div>
-                </div>
+
                 <h2>Home Address</h2>
-                <div class="column">
+                <div class="place">
                     <div class="input-box">
-                        <label for="hbldg">RM/FLR/Unit No. & Bldg. Name</label>
-                        <input id="hbldg" type="text" name="hbldg" placeholder="RM/FLR/Unit" required value="<?= htmlspecialchars($record['ha_unitno']) ?>">
+                        <label>Unit No. & Bldg. Name:</label>
+                        <input type="text" name="hbldg" required value="<?= htmlspecialchars($addressRecord['ha_unitno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="hblk">House/Lot & Blk. No</label>
-                        <input id="hblk" type="text" name="hblk" placeholder="House/Lot No." required value="<?= htmlspecialchars($record['ha_blkno']) ?>">
+                        <label>House/Lot & Blk. No:</label>
+                        <input type="text" name="hblk" required value="<?= htmlspecialchars($addressRecord['ha_blkno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="hsn">Street Name</label>
-                        <input id="hsn" type="text" name="hsn" placeholder="Street Name" required value="<?= htmlspecialchars($record['ha_sn']) ?>">
+                        <label>Street Name:</label>
+                        <input type="text" name="hsn" required value="<?= htmlspecialchars($addressRecord['ha_sn']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>Subdivision:</label>
+                        <input type="text" name="hsubdivision" value="<?= htmlspecialchars($addressRecord['ha_subdivision']) ?>">
                     </div>
                 </div>
 
-                <div class="column">
+                <div class="home">
                     <div class="input-box">
-                        <label for="hsubdivision">Subdivision</label>
-                        <input id="hsubdivision" type="text" name="hsubdivision" placeholder="Subdivision" value="<?= htmlspecialchars($record['ha_subdivision']) ?>">
+                        <label>Barangay/District:</label>
+                        <input type="text" name="hbarangay" required value="<?= htmlspecialchars($addressRecord['ha_barangay']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="hbarangay">Barangay/District</label>
-                        <input id="hbarangay" type="text" name="hbarangay" placeholder="Barangay/District" value="<?= htmlspecialchars($record['ha_barangay']) ?>">
+                        <label>City:</label>
+                        <input type="text" name="hcity" required value="<?= htmlspecialchars($addressRecord['ha_city']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="hcity">City/Municipality</label>
-                        <input id="hcity" type="text" name="hcity" placeholder="City/Municipality" value="<?= htmlspecialchars($record['ha_city']) ?>">
+                        <label>Province:</label>
+                        <input type="text" name="hprovince" required value="<?= htmlspecialchars($addressRecord['ha_province']) ?>">
+                    </div>
+                    <div class="input-box">
+                        <label>Zipcode:</label>
+                        <input type="text" name="hzip" value="<?= htmlspecialchars($addressRecord['ha_zipcode']) ?>">
                     </div>
                 </div>
+
                 <div class="input-box">
                     <label>Country</label>
-                    <select name="hcountry" id="hcountry" required>
+                    <select name="country" id="hcountry" required>
                         <option value="" disabled selected>Select</option>
                         <?php
+                        $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
+                        "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas (the)", "Bahrain", 
+                        "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia (Plurinational State of)", 
+                        "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory (the)", 
+                        "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands (the)", 
+                        "Central African Republic (the)", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands (the)", "Colombia", "Comoros (the)", 
+                        "Congo (the Democratic Republic of the)", "Congo (the)", "Cook Islands (the)", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia",
+                        "Côte d'Ivoire", "Denmark", "Djibouti", "Dominica", "Dominican Republic (the)", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
+                        "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (the) [Malvinas]", "Faroe Islands (the)", "Fiji", "Finland", "France", 
+                        "French Guiana", "French Polynesia", "French Southern Territories (the)", "Gabon", "Gambia (the)", "Georgia", "Germany", "Ghana", 
+                        "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", 
+                        "Haiti", "Heard Island and McDonald Islands", "Holy See (the)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", 
+                        "Iran (Islamic Republic of)", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", 
+                        "Kenya", "Kiribati", "Korea (the Democratic People's Republic of)", "Korea (the Republic of)", "Kuwait", "Kyrgyzstan", 
+                        "Lao People's Democratic Republic (the)", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
+                        "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands (the)", "Martinique", "Mauritania", "Mauritius", 
+                        "Mayotte", "Mexico", "Micronesia (Federated States of)", "Moldova (the Republic of)", "Monaco", "Mongolia", "Montenegro", "Montserrat", 
+                        "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands (the)", "New Caledonia", "New Zealand", "Nicaragua", 
+                        "Niger (the)", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands (the)", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", 
+                        "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines (the)", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", 
+                        "Republic of North Macedonia", "Romania", "Russian Federation (the)", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", 
+                        "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", 
+                        "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", 
+                        "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", 
+                        "Sri Lanka", "Sudan (the)", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan", "Tajikistan", 
+                        "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
+                        "Turks and Caicos Islands (the)", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates (the)", "United Kingdom of Great Britain and Northern Ireland (the)", 
+                        "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
+                        "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"];
                         foreach ($countries as $country) {
-                            $selected = ($country == $homeAddress['ha_country']) ? 'selected' : '';
-                            echo "<option value=\"$country\" $selected>$country</option>";
+                            echo "<option value=\"$country\" " . ($country == $country ? 'selected' : '') . ">$country</option>";
                         }
                         ?>
                     </select>
                 </div>
-                <div class="column">
+
+                <h2>Contact Information</h2>
+                <div class="type">
                     <div class="input-box">
-                        <label for="hprovince">Province</label>
-                        <input id="hprovince" type="text" name="hprovince" placeholder="Province" value="<?= htmlspecialchars($record['ha_province']) ?>">
+                        <label>Mobile Number</label>
+                        <input type="text" name="number" value="<?= htmlspecialchars($addressRecord['ha_mobileno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="hzip">Zip Code</label>
-                        <input type="text" name="hzip" id="hzip" value="<?= htmlspecialchars($record['ha_zipcode']) ?>">
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="input-box">
-                        <label for="number">Mobile/Cellphone No.</label>
-                        <input type="text" name="number" id="number" required value="<?= htmlspecialchars($record['ha_mobileno']) ?>">
+                        <label>Telephone Number</label>
+                        <input type="text" name="tel" value="<?= htmlspecialchars($addressRecord['ha_telno']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="email">E-mail Address</label>
-                        <input id="email" type="email" name="email" placeholder="E-mail Address" required value="<?= htmlspecialchars($record['ha_email']) ?>">
-                    </div>
-                    <div class="input-box">
-                        <label for="tel">Telephone Number</label>
-                        <input type="text" name="tel" id="tel" required value="<?= htmlspecialchars($record['ha_telno']) ?>">
+                        <label>Email</label>
+                        <input type="email" name="email" value="<?= htmlspecialchars($addressRecord['ha_email']) ?>">
                     </div>
                 </div>
+
                 <h2>Father's Name</h2>
-                <div class="column">
+                <div class="type">
                     <div class="input-box">
-                        <label for="father_lastname">Last Name</label>
-                        <input type="text" name="father_lastname" placeholder="Enter Last Name" value="<?= htmlspecialchars($record['f_lname']) ?>">
+                        <label>Last Name</label>
+                        <input type="text" name="father_lastname" value="<?= htmlspecialchars($parentsRecord['f_lname']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="father_firstname">First Name</label>
-                        <input type="text" name="father_firstname" placeholder="Enter First Name" value="<?= htmlspecialchars($record['f_fname']) ?>">
+                        <label>First Name</label>
+                        <input type="text" name="father_firstname" value="<?= htmlspecialchars($parentsRecord['f_fname']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="father_middle">Middle Initial</label>
-                        <input type="text" name="father_middle" placeholder="Enter Middle Name" value="<?= htmlspecialchars($record['f_middle']) ?>">
+                        <label>Middle Name</label>
+                        <input type="text" name="father_middle" value="<?= htmlspecialchars($parentsRecord['f_middle']) ?>">
                     </div>
                 </div>
+
                 <h2>Mother's Name</h2>
-                <div class="column">
+                <div class="type">
                     <div class="input-box">
-                        <label for="mother_lastname">Last Name</label>
-                        <input type="text" name="mother_lastname" placeholder="Enter Last Name" value="<?= htmlspecialchars($record['m_lname']) ?>">
+                        <label>Last Name</label>
+                        <input type="text" name="mother_lastname" value="<?= htmlspecialchars($contactRecord['m_lname']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="mother_firstname">First Name</label>
-                        <input type="text" name="mother_firstname" placeholder="Enter First Name" value="<?= htmlspecialchars($record['m_fname']) ?>">
+                        <label>First Name</label>
+                        <input type="text" name="mother_firstname" value="<?= htmlspecialchars($contactRecord['m_fname']) ?>">
                     </div>
                     <div class="input-box">
-                        <label for="mother_middle">Middle Initial</label>
-                        <input type="text" name="mother_middle" placeholder="Enter Middle Name" value="<?= htmlspecialchars($record['m_middle']) ?>">
+                        <label>Middle Name</label>
+                        <input type="text" name="mother_middle" value="<?= htmlspecialchars($contactRecord['m_middle']) ?>">
                     </div>
                 </div>
-
-                <div class="buttons">
-                    <div class="error-container">
-                        <?php if (!empty($errors)): ?>
-                            <div class="error">
-                                <?php echo implode('<br>', $errors); ?>
-                            </div>
-                        <?php endif; ?>
+  
+                <div class="button">
+                <button onclick="window.location.href='details.php'" class="backBtn">Update</button>
                     </div>
 
-                    <div class="button">
-                        <button type="submit">Submit</button>
-                    </div>
                 </div>
-            </form>
-        </section>
-    </div>
+            </div>
+        </div>
+    </form>
 </div>
-<script src="main.js"></script>
-
 </body>
 </html>
