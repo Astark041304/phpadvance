@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mobile = isset($_POST['number']) ? $_POST['number'] : '';
 
     $updateHomeAddressStmt = $conn->prepare("UPDATE tbl_hadress SET ha_unitno = ?, ha_blkno = ?, ha_sn = ?, ha_subdivision = ?, ha_barangay = ?, ha_city = ?, ha_province = ?, ha_country = ?, ha_zipcode = ?, ha_email = ?, ha_telno = ?, ha_mobileno = ? WHERE ha_id = ?");
-    $updateHomeAddressStmt->bind_param("issssssssssi", $unit, $blk, $streetName, $subdivision, $barangay, $city, $province, $country, $zipCode, $email, $telephone, $mobile, $id);
+    $updateHomeAddressStmt->bind_param("isssssssssssi", $unit, $blk, $streetName, $subdivision, $barangay, $city, $province, $country, $zipCode, $email, $telephone, $mobile, $id);
     
     if (!$updateHomeAddressStmt->execute()) {
         error_log("Error updating tbl_hadress: " . $updateHomeAddressStmt->error);
@@ -256,7 +256,7 @@ $conn->close();
 
                 <div class="input-box">
                     <label>Country</label>
-                    <select name="country" id="hcountry" required>
+                    <select name="country" id="country" required>
                         <option value="" disabled selected>Select</option>
                         <?php
                         $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
@@ -289,7 +289,7 @@ $conn->close();
                         "United States Minor Outlying Islands (the)", "United States of America (the)", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela (Bolivarian Republic of)", 
                         "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe", "Åland Islands"];
                         foreach ($countries as $country) {
-                            echo "<option value=\"$country\" " . ($country == $country ? 'selected' : '') . ">$country</option>";
+                            echo "<option value=\"$country\" " . ($birthcountry == $country ? 'selected' : '') . ">$country</option>";
                         }
                         ?>
                     </select>
@@ -336,7 +336,7 @@ $conn->close();
 
                 <div class="input-box">
                     <label>Country</label>
-                    <select name="country" id="hcountry" required>
+                    <select name="hcountry" id="country" required>
                         <option value="" disabled selected>Select</option>
                         <?php
                         $countries = ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", 
@@ -422,15 +422,22 @@ $conn->close();
                         <input type="text" name="mother_middle" value="<?= htmlspecialchars($contactRecord['m_middle']) ?>">
                     </div>
                 </div>
-  
-                <div class="button">
-                <button onclick="window.location.href='details.php'" class="backBtn">Update</button>
-                    </div>
 
                 </div>
             </div>
         </div>
+
+        <div class="button">
+                  <button onclick="window.location.href='update.php'" class="backBtn">Update</button>
+                  </div>
+               
+                  <div class="button">
+                  <form action="details.php" method="GET" style="display:inline;">
+                   <button type="submit" class="btn-details">View Details</button>
+                   </form>
+                   </div>
     </form>
+                
 </div>
 </body>
 </html>

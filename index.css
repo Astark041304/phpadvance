@@ -186,3 +186,35 @@ span {
     font-weight: bold;
     text-align: center;
 }
+
+
+.btn-details {
+    display: inline-block; 
+    padding: 10px 15px; 
+    margin: 10px 0; 
+    border: none; 
+    border-radius: 5px; 
+    background-color: #007BFF; 
+    color: white; 
+    text-decoration: none; 
+    text-align: center; 
+    cursor: pointer; 
+    font-size: 16px; 
+    transition: background-color 0.3s ease; 
+}
+
+
+.btn-details:hover {
+    background-color: #0056b3; 
+}
+
+
+.btn-details:focus {
+    outline: none; 
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); 
+}
+
+
+.button {
+    margin: 20px 0; 
+}

@@ -17,9 +17,9 @@ $stmt->bind_param("sssssssss",
     $formData['personal_firstname'], 
     $formData['personal_middle'], 
     $formData['dob'], 
-    $formData['sex'], 
-    $formData['civilStatus'], 
-    $formData['taxId'], 
+    $formData['sex'], // Added missing 'sex' field
+    $formData['civilStatus'], // Added missing 'civilStatus' field
+    $formData['taxId'], // Added missing 'taxId' field
     $formData['religion'], 
     $formData['nationality']
 );
@@ -90,6 +90,7 @@ $stmt->execute();
 $pId = $stmt->insert_id; 
 $stmt->close(); 
 
+// Fetch data for display
 $personal = $conn->query("SELECT * FROM tbl_personal");
 $placeofbirth = $conn->query("SELECT * FROM tbl_placeofbirth");
 $hadress = $conn->query("SELECT * FROM tbl_hadress");
@@ -157,6 +158,7 @@ $conn->close();
                         </form>
                         <form action="delete.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $row['p_id'] ?>">
+                            <input type="hidden" name="table" value="personal">
                             <button type="submit" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                         </form>
                     </td>
@@ -198,6 +200,7 @@ $conn->close();
                         </form>
                         <form action="delete.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $row['pob_id'] ?>">
+                            <input type="hidden" name="table" value="placeofbirth">
                             <button type="submit" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                         </form>
                     </td>
@@ -221,7 +224,7 @@ $conn->close();
                 <th>Email</th>
                 <th>Telephone</th> 
                 <th>Mobile</th> 
-                <th>Action</th> <!-- New column for actions -->
+                <th>Action</th> 
             </tr>
             <?php while ($row = $hadress->fetch_assoc()): ?>
                 <tr>
@@ -245,6 +248,7 @@ $conn->close();
                         </form>
                         <form action="delete.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $row['ha_id'] ?>">
+                            <input type="hidden" name="table" value="hadress">
                             <button type="submit" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                         </form>
                     </td>
@@ -259,7 +263,7 @@ $conn->close();
                 <th>Father's Last Name</th> 
                 <th>Father's First Name</th> 
                 <th>Father's Middle Initial</th>
-                <th>Action</th> <!-- New column for actions -->
+                <th>Action</th> 
             </tr>
             <?php while ($row = $finfo->fetch_assoc()): ?>
                 <tr>
@@ -274,6 +278,7 @@ $conn->close();
                         </form>
                         <form action="delete.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $row['f_id'] ?>">
+                            <input type="hidden" name="table" value="finfo">
                             <button type="submit" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                         </form>
                     </td>
@@ -288,7 +293,7 @@ $conn->close();
                 <th>Mother's Last Name</th> 
                 <th>Mother's First Name</th> 
                 <th>Mother's Middle Initial</th>
-                <th>Action</th> <!-- New column for actions -->
+                <th>Action</th> 
             </tr>
             <?php while ($row = $minfo->fetch_assoc()): ?>
                 <tr>
@@ -303,6 +308,7 @@ $conn->close();
                         </form>
                         <form action="delete.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id" value="<?= $row['m_id'] ?>">
+                            <input type="hidden" name="table" value="minfo">
                             <button type="submit" onclick="return confirm('Are you sure you want to delete this record?');">Delete</button>
                         </form>
                     </td>
@@ -312,8 +318,8 @@ $conn->close();
 
         <div class="nbutton">
             <button onclick="window.location.href='index.php'" class="backBtn">Add</button>
-            <button onclick="window.location.href='index.php'" class="backBtn">Delete</button>
         </div>
+        
         </section>
     </div>
 </div>
